@@ -26,6 +26,43 @@ Three parts:
 
 ---
 
+## Getting started
+
+autoreward has **no runtime to install** — it's a method, a library, and an
+injectable prompt. You install it *into your own project* so your coding agent
+adopts the A/B/C discipline.
+
+```bash
+# 1. clone
+git clone https://github.com/michaelhunley/autoreward && cd autoreward
+
+# 2a. inject the policy into YOUR project's CLAUDE.md (idempotent)
+bash install.sh /path/to/your/project
+#    Windows:  powershell -File install.ps1 C:\path\to\your\project
+
+# 2b. ...or install AND wire up the autonomous loop in one step:
+bash install.sh /path/to/your/project --with-autoresearch
+#    clones karpathy/autoresearch next to autoreward and prints the wiring
+#    (Windows: powershell -File install.ps1 C:\path\to\project -WithAutoresearch)
+```
+
+**Then just work.** On any "is this good?" question your agent now: names the tier,
+opens `gauges/by-goal.md` for the closest example, picks a B-proxy from
+`models/index.json` by domain + ranking, adds a cross-check, and reports a
+**number + tier** instead of a vibe — logging any tier-A call so the next run is
+B or C (the ratchet).
+
+**See the value in one command:** `python demos/naive_metric_fooled.py` — a naive
+metric (PSNR) and eyeballing both pick the wrong candidate; the right tier-C gauge
+picks the faithful one. That gap is the whole point.
+
+**Run it as an RLAIF loop:** define your reward with a gauge here, then let an
+autoresearch-style loop maximize it — see [`CONNECT.md`](CONNECT.md) and
+`integrations/autoresearch_bridge.py` (run it for a working example). Spot-check by
+hand every N rounds to recalibrate a tier-B proxy and confirm C wasn't gamed.
+
+---
+
 ## The Tiers: A / B / C — automate the reward, prefer C > B > A
 
 | Tier | What it is | Reproducible | Hard to fool | Optimizable in a loop |
@@ -49,32 +86,7 @@ Three parts:
    (Real failures: a blob passed a silhouette-IoU; a head-less 3D reconstruction
    passed a deformation metric. Both needed a second gauge to catch.)
 
-**See it fail-then-work in 1 file:** `python demos/naive_metric_fooled.py` — PSNR
-(a naive metric) and eyeballing both pick the wrong candidate; the right tier-C
-gauge picks the faithful one. That gap *is* the value of this repo.
-
----
-
-## Use it in your own project (onboarding)
-
-autoreward is **injected into your repo** so your coding agent adopts the discipline.
-
-```bash
-git clone https://github.com/michaelhunley/autoreward && cd autoreward
-
-# inject the A/B/C policy + atlas pointers into YOUR project's CLAUDE.md (idempotent)
-bash install.sh /path/to/your/project       # or: powershell -File install.ps1 C:\path\to\project
-```
-
-Then work normally. On any "is this good?" question your agent now: names the tier,
-opens `gauges/by-goal.md` for the closest example, picks a B-proxy from
-`models/index.json` by domain + ranking, adds a cross-check, reports a **number +
-tier** (not a vibe), and logs any tier-A call (the ratchet). No runtime to install
-— it's a method + a library + an injectable prompt (`AGENT_POLICY.md`).
-
-To run an RLAIF loop: define your reward with a gauge from here, then let an
-autoresearch-style loop optimize it, with periodic tier-A spot-checks to recalibrate
-B and confirm C wasn't gamed.
+The injectable prompt itself lives in `AGENT_POLICY.md`.
 
 ---
 

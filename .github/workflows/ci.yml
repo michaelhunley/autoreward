@@ -12,6 +12,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - name: Install demo deps
+        run: python -m pip install --quiet numpy
       - name: Rebuild catalogs from entries
         run: python scripts/build.py
       - name: Fail if INDEX.md / models/index.json are stale
