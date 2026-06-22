@@ -1,138 +1,109 @@
-# Gauge Atlas
+# autoreward
 
-**A systematic way to turn subjective / qualitative judgment into empirical signals — so agents and humans iterate toward "best" instead of arguing about "looks good."**
+**The reward layer for autonomous (RLAIF) loops.** Agentic loops that improve a
+system — generate, score, keep the best, repeat — only work if the *score* is
+trustworthy. In objective domains that score is given (compile, tests, `val_bpb`).
+In **subjective / qualitative** domains (does this render match? is it the same
+character? is this answer good? is the motion natural?) it isn't — so the loop has
+nothing to optimize and you fall back to **eyeballing outputs and calling them
+good.** That doesn't scale, isn't reproducible, and is easy to fool.
 
-Most hard problems in ML, creative tooling, and agentic work stall on the same
-failure: validating quality by *looking at it and deciding it's good*. That is
-slow, irreproducible, and easy to fool. This repo is a catalog and a method for
-escaping it.
+**autoreward makes the reward signal systematic.** It is a method + a
+community-driven library for *constructing* an empirical reward in subjective
+spaces, so an autonomous loop can actually run there.
 
-It has three parts:
-1. **The Tiers (A/B/C)** — a discipline for *how you know* something is good.
-2. **The Gauge Atlas** — a library of worked examples, organized **by workflow
-   goal**, you can copy and adapt to a new problem.
-3. **The Model Index** — a catalog of models that encode human judgment (the
-   tier-B proxies), with the domains each is good in and a reliability ranking.
+Three parts:
+1. **The Tiers (A/B/C)** — how to decide *how you know* something is good, and
+   always climb toward an automatable signal.
+2. **The Gauge library** — worked, copy-and-adapt examples organized by workflow goal.
+3. **The Model Index** — a community catalog of models that encode human judgment
+   (the tier-B proxies), with the domains each is good in and a reliability ranking.
+
+> Where it sits: [karpathy/autoresearch](https://github.com/karpathy/autoresearch)
+> is the *loop* (run experiments, keep what improves a metric). **autoreward is the
+> *reward*** — the score that loop optimizes, for domains where no metric is handed
+> to you. They compose directly into an RLAIF loop.
 
 ---
 
-## The Tiers: A / B / C (prefer C > B > A)
+## The Tiers: A / B / C — automate the reward, prefer C > B > A
 
-Every "is this good / correct / a match?" judgment is one of three tiers. Always
-push toward the highest one you can build.
+| Tier | What it is | Reproducible | Hard to fool | Optimizable in a loop |
+|------|-----------|--------------|--------------|-----------------------|
+| **C — Empirical, target-anchored** | computable distance from a *defined known-good target*; pass/fail on a threshold | yes | yes (with a cross-check) | yes |
+| **B — Learned proxy** | a model trained on human responses predicts what a human would say | ~yes | partially (drifts / gameable) | yes |
+| **A — Human review** | a person judges directly | no | n/a | no |
 
-| Tier | What it is | Cost | Reproducible | Hard to fool | Directly optimizable |
-|------|-----------|------|--------------|--------------|----------------------|
-| **C — Empirical, target-anchored** | A computable distance from a *defined known-good target*; pass/fail on a threshold. | low | yes | yes (with a cross-check) | yes (search/gradient) |
-| **B — Learned proxy** | A model trained on human responses predicts what a human would say. | low/med | ~yes | partially (can be gamed/drift) | yes |
-| **A — Human review** | A person judges directly. | high | no | n/a | no |
-
-- **C** needs (i) a known-good target and (ii) a distance metric. It is **not**
-  limited to physics — qualitative criteria can be *encoded* as feature vectors
-  (identity, pose, lighting, composition). When C encodes an expert's criteria,
-  it proxies an **expert**.
-- **B** proxies a **general** human; use it when no objective target exists but
-  human-preference data does. Always report its *calibration* (agreement with
-  held-out human labels) when you cite it.
+- **C** needs (i) a known-good target + (ii) a distance metric. Not limited to
+  physics — qualitative criteria can be *encoded* as feature vectors (identity,
+  pose, lighting, composition). When C encodes an expert's criteria it proxies an
+  **expert**.
+- **B** proxies a **general** human; use when no target exists but human-preference
+  data/model does. Report its calibration (agreement with held-out human labels).
 - **A** is the last resort.
 
-### Two rules that make it work
+**Two rules that make it an automatable reward:**
+1. **The Ratchet** — every tier-A judgment is logged as labeled data so the *next*
+   run is B or C. You never stay at A for the same problem twice.
+2. **No gauge trusted alone** — pair every gauge with an orthogonal cross-check.
+   (Real failures: a blob passed a silhouette-IoU; a head-less 3D reconstruction
+   passed a deformation metric. Both needed a second gauge to catch.)
 
-1. **The Ratchet.** Every time you're forced down to A, capture the human's
-   judgment as labeled data, so the *next* time the same problem is B or C. You
-   never stay at A for the same problem twice. Coverage ratchets toward C.
-2. **No gauge trusted alone.** A gauge must be *hard to fool*: pair it with a
-   cross-check. (Real examples: a featureless blob once passed silhouette-IoU; a
-   head-less 3D reconstruction passed a 1.9% deformation metric. Both needed a
-   second, orthogonal gauge to catch.)
-
-### Why C > B > A (the punchline)
-
-C lets you iterate without a human in the loop, reproducibly, and optimize
-directly. B scales human judgment but can drift and be gamed. A is ground truth
-but doesn't scale. **C and B together are the reward signal for RLAIF-style
-loops** (generate -> score -> select/refine), with periodic A spot-checks to
-recalibrate B and confirm C wasn't gamed.
-
----
-
-## How to apply this to a new problem
-
-1. State the **workflow goal** in one line ("is the rendered character the same
-   person as the reference?").
-2. Ask: **can I define a known-good target + a distance?** -> build **C**.
-   Look in [`gauges/by-goal.md`](gauges/by-goal.md) for a close example to adapt.
-3. If not, is there **human-preference data or a model that encodes it?** -> use
-   **B**. Pick from [`models/index.json`](models/index.json) by domain + ranking.
-4. Otherwise **A** — and log the judgment to bootstrap B/C next time.
-5. Add a **cross-check** gauge so the primary can't be silently fooled.
-6. Register your gauge (see [`SCHEMA.md`](SCHEMA.md)) and, ideally, contribute it
-   back as a new worked example.
+**See it fail-then-work in 1 file:** `python demos/naive_metric_fooled.py` — PSNR
+(a naive metric) and eyeballing both pick the wrong candidate; the right tier-C
+gauge picks the faithful one. That gap *is* the value of this repo.
 
 ---
 
 ## Use it in your own project (onboarding)
 
-Gauge Atlas is meant to be **injected into your own repo** so your coding agent
-adopts the discipline — same idea as a shareable `CLAUDE.md` policy pack.
+autoreward is **injected into your repo** so your coding agent adopts the discipline.
 
 ```bash
-# 1. get it (clone next to your projects)
-git clone https://github.com/<you>/gauge-atlas && cd gauge-atlas
+git clone https://github.com/michaelhunley/autoreward && cd autoreward
 
-# 2. inject the policy into YOUR project's CLAUDE.md (idempotent)
-bash install.sh /path/to/your/project          # or: powershell -File install.ps1 C:\path\to\project
-#   -> appends a marked block with the A/B/C policy + pointers to this atlas
-
-# 3. (optional) just read the one file you need
-#   AGENT_POLICY.md  - the snippet to paste by hand if you prefer
+# inject the A/B/C policy + atlas pointers into YOUR project's CLAUDE.md (idempotent)
+bash install.sh /path/to/your/project       # or: powershell -File install.ps1 C:\path\to\project
 ```
 
-Then work normally. When your agent (or you) hits a "is this good?" question it now:
-1. names the tier (A/B/C) instead of eyeballing,
-2. opens `gauges/by-goal.md`, finds the closest workflow goal, and adapts that gauge,
-3. if it needs a learned proxy, picks one from `models/index.json` by domain + ranking,
-4. adds a cross-check, reports a **number + tier**, and logs any tier-A call so the
-   next run can be B or C (the ratchet).
+Then work normally. On any "is this good?" question your agent now: names the tier,
+opens `gauges/by-goal.md` for the closest example, picks a B-proxy from
+`models/index.json` by domain + ranking, adds a cross-check, reports a **number +
+tier** (not a vibe), and logs any tier-A call (the ratchet). No runtime to install
+— it's a method + a library + an injectable prompt (`AGENT_POLICY.md`).
 
-No runtime, no dependency to install — it's a method + a reference library + an
-injectable prompt. Contribute your new gauge back via a PR.
+To run an RLAIF loop: define your reward with a gauge from here, then let an
+autoresearch-style loop optimize it, with periodic tier-A spot-checks to recalibrate
+B and confirm C wasn't gamed.
 
-## Relationship to autoresearch (complementary)
+---
 
-[karpathy/autoresearch](https://github.com/karpathy/autoresearch) lets an agent run
-LLM training experiments autonomously overnight and keep the ones that improve a
-metric (`val_bpb`). It works **because it already has a clean tier-C metric** —
-lower bits-per-byte is objective, reproducible, and hard to fool.
+## Contribute (community-driven)
 
-Most domains aren't so lucky. In creative/qualitative/subjective spaces (does this
-render match the target? is it the same character? is the motion natural?) the hard
-part is that **there is no obvious metric** — so the loop has nothing to optimize
-and you fall back to staring at outputs.
-
-**Gauge Atlas is the missing half: the method for *constructing* the reward signal**
-(tier C if a target can be defined, tier B if only human preference exists) so that
-an autoresearch-style loop can run in those domains. autoresearch is the *engine*
-(generate → score → keep best, on a budget); Gauge Atlas supplies the *score*. They
-compose directly: define your `val_*` with a gauge from here, then let an
-autoresearch-style loop optimize it — with periodic human spot-checks to recalibrate
-B and confirm C wasn't gamed (RLAIF). The onboarding pattern here (one injectable
-agent-instruction file, point your agent at it) is deliberately modeled on
-autoresearch's `program.md`.
+The library grows by PR — same spirit as a context hub. Add one file:
+- a **gauge**: `gauges/entries/<id>.md` (markdown + frontmatter; see `SCHEMA.md`)
+- a **B-proxy model**: `models/entries/<id>.md`
+Then `python scripts/build.py` regenerates `INDEX.md` + `models/index.json`. See
+[`CONTRIBUTING.md`](CONTRIBUTING.md). The honest part that matters most: list each
+model's **weak** domains and justify its **ranking_score** — that's what stops
+people trusting a proxy where it lies.
 
 ## Repo layout
 
 ```
-README.md            this file - the method
-SCHEMA.md            the gauge + model-index entry schemas
+README.md            the method + onboarding
+AGENT_POLICY.md      the injectable CLAUDE.md block
+SCHEMA.md            gauge + model entry schemas
+CONTRIBUTING.md      how to add an entry by PR
+INDEX.md             generated catalog (scripts/build.py)
+demos/               runnable proofs (naive_metric_fooled.py)
 gauges/
-  by-goal.md         the library: workflow goal -> recommended tier/metric/model
-  examples/*.json    worked gauges (real + generalized), copy-and-adapt
+  by-goal.md         workflow goal -> recommended tier/metric/model
+  entries/*.md       gauge entries (community)
 models/
-  index.json         models that encode human responses (tier-B proxies)
-  README.md          how the ranking + domain fit are assigned
+  entries/*.md       B-proxy model entries (community)
+  index.json         generated catalog
+scripts/build.py     rebuild the catalogs from entries
 ```
 
-This atlas is meant to grow. The point is not the specific examples — it is to
-make "how do we know this is good?" a **systematic, answerable** question in any
-subjective or qualitative problem space.
+MIT licensed — built to be applied to anyone's subjective or qualitative problem space.
