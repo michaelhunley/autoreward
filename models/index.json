@@ -1,0 +1,149 @@
+{
+  "_comment": "Models that encode human responses - tier-B proxies (preference/quality) or backbones for tier-C feature distances. ranking_score is reliability as a human proxy in its strong domains (1-5, see SCHEMA.md).",
+  "models": [
+    {
+      "id": "clip",
+      "modality": "image-text",
+      "encodes": "web-scale image-caption association ~ human semantic 'what is this / does it match this description'",
+      "use_as": "C-metric (image/text feature cosine to a target) and weak B-proxy",
+      "domains_strong": ["semantic similarity", "does-this-look-like-X", "text-image match"],
+      "domains_weak": ["fine identity", "fine geometry", "small spatial differences"],
+      "ranking_score": 4,
+      "ranking_basis": "huge adoption; strong semantic correlation, weak on fine detail",
+      "how_to_use": "cosine of CLIP embeddings of render vs reference render (or text)",
+      "ref": "Radford et al. 2021"
+    },
+    {
+      "id": "lpips",
+      "modality": "image",
+      "encodes": "human 2AFC perceptual-similarity judgments",
+      "use_as": "C-metric (perceptual distance to a target image)",
+      "domains_strong": ["perceptual image fidelity vs a target"],
+      "domains_weak": ["semantic identity", "no-reference quality"],
+      "ranking_score": 5,
+      "ranking_basis": "trained directly on human perceptual judgments; standard",
+      "how_to_use": "lpips(render, target_aligned_crop); lower = closer",
+      "ref": "Zhang et al. 2018"
+    },
+    {
+      "id": "dreamsim",
+      "modality": "image",
+      "encodes": "human similarity judgments at the mid-level (layout/pose/identity-ish)",
+      "use_as": "C-metric (human-aligned image distance)",
+      "domains_strong": ["human-aligned 'are these the same thing'"],
+      "domains_weak": ["pixel-exact differences"],
+      "ranking_score": 4,
+      "ranking_basis": "fine-tuned on human similarity; newer, growing adoption",
+      "how_to_use": "dreamsim(a,b) as a human-aligned distance",
+      "ref": "Fu et al. 2023"
+    },
+    {
+      "id": "arcface",
+      "modality": "image",
+      "encodes": "face-identity discrimination (margin loss on identity labels)",
+      "use_as": "C-metric (face identity cosine vs a reference face)",
+      "domains_strong": ["face identity match"],
+      "domains_weak": ["non-face", "occluded/back views"],
+      "ranking_score": 5,
+      "ranking_basis": "state-of-practice for face identity",
+      "how_to_use": "cosine of face embeddings, render-face vs reference-face",
+      "ref": "Deng et al. 2019"
+    },
+    {
+      "id": "pickscore",
+      "modality": "image-text",
+      "encodes": "human preference between text-to-image generations",
+      "use_as": "B-proxy (which generation a general human prefers)",
+      "domains_strong": ["ranking T2I outputs for a prompt"],
+      "domains_weak": ["absolute quality", "non-generative images"],
+      "ranking_score": 4,
+      "ranking_basis": "trained on large human preference set; good ranking correlation",
+      "how_to_use": "score(prompt, image); higher = more preferred",
+      "ref": "Kirstain et al. 2023"
+    },
+    {
+      "id": "hpsv2",
+      "modality": "image-text",
+      "encodes": "human preference for generated images",
+      "use_as": "B-proxy",
+      "domains_strong": ["T2I preference ranking"],
+      "domains_weak": ["fine fidelity to a specific target"],
+      "ranking_score": 4,
+      "ranking_basis": "human-preference-trained; common T2I benchmark",
+      "how_to_use": "hps(prompt, image)",
+      "ref": "Wu et al. 2023"
+    },
+    {
+      "id": "imagereward",
+      "modality": "image-text",
+      "encodes": "human ratings of T2I (alignment + fidelity + aesthetics)",
+      "use_as": "B-proxy (reward for RLAIF on T2I)",
+      "domains_strong": ["T2I reward signal"],
+      "domains_weak": ["non-generative"],
+      "ranking_score": 4,
+      "ranking_basis": "purpose-built reward model with human ratings",
+      "how_to_use": "reward(prompt, image)",
+      "ref": "Xu et al. 2023"
+    },
+    {
+      "id": "laion-aesthetic",
+      "modality": "image",
+      "encodes": "human aesthetic ratings",
+      "use_as": "B-proxy (aesthetic quality)",
+      "domains_strong": ["aesthetic ranking"],
+      "domains_weak": ["correctness", "identity", "task fitness"],
+      "ranking_score": 3,
+      "ranking_basis": "useful aesthetic proxy; narrow and gameable",
+      "how_to_use": "aesthetic_score(image)",
+      "ref": "LAION aesthetic predictor"
+    },
+    {
+      "id": "vmaf",
+      "modality": "video",
+      "encodes": "human video-quality (MOS) judgments",
+      "use_as": "C-metric (perceptual video quality vs a reference)",
+      "domains_strong": ["video quality vs a reference"],
+      "domains_weak": ["semantic/content correctness"],
+      "ranking_score": 5,
+      "ranking_basis": "industry standard, human-MOS-tuned",
+      "how_to_use": "vmaf(distorted, reference)",
+      "ref": "Netflix VMAF"
+    },
+    {
+      "id": "rlhf-reward-model",
+      "modality": "text",
+      "encodes": "human preference between responses",
+      "use_as": "B-proxy (text quality/helpfulness reward)",
+      "domains_strong": ["response preference ranking", "RLHF/RLAIF reward"],
+      "domains_weak": ["factuality", "reward hacking under optimization"],
+      "ranking_score": 4,
+      "ranking_basis": "core of RLHF; strong but gameable under heavy optimization",
+      "how_to_use": "reward(prompt, response)",
+      "ref": "Ouyang et al. 2022"
+    },
+    {
+      "id": "bertscore",
+      "modality": "text",
+      "encodes": "semantic token alignment ~ human similarity to a reference text",
+      "use_as": "C-metric (semantic distance to a reference)",
+      "domains_strong": ["summary/translation vs reference"],
+      "domains_weak": ["no-reference quality", "factuality"],
+      "ranking_score": 4,
+      "ranking_basis": "better human correlation than ROUGE/BLEU",
+      "how_to_use": "bertscore(candidate, reference)",
+      "ref": "Zhang et al. 2020"
+    },
+    {
+      "id": "llm-as-judge",
+      "modality": "text",
+      "encodes": "approximates an expert rater via instructions + few-shot",
+      "use_as": "B-proxy (flexible expert-ish judgment)",
+      "domains_strong": ["open-ended quality with a rubric", "pairwise preference"],
+      "domains_weak": ["position/verbosity bias", "self-preference", "calibration drift"],
+      "ranking_score": 3,
+      "ranking_basis": "flexible and strong with a good rubric; biased - audit + cross-check",
+      "how_to_use": "judge(rubric, item) -> score/preference; debias with pairwise + swaps",
+      "ref": "Zheng et al. 2023 (MT-Bench)"
+    }
+  ]
+}
