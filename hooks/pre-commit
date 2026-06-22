@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# autoreward local pre-commit hook: rebuild the catalogs from entries and stage
+# them, so INDEX.md / models/index.json are never stale.
+# Install once:  cp hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+python scripts/build.py || python3 scripts/build.py || exit 0
+git add INDEX.md models/index.json 2>/dev/null
+exit 0

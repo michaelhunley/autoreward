@@ -1,7 +1,7 @@
 # Inject the autoreward validation-tiers policy into YOUR project's CLAUDE.md
 # (or AGENTS.md). Idempotent. Usage:
 #   powershell -File install.ps1 [C:\path\to\your\project] [CLAUDE.md|AGENTS.md]
-param([string]$Target = $PWD, [string]$File = "CLAUDE.md")
+param([string]$Target = $PWD, [string]$File = "CLAUDE.md", [switch]$WithAutoresearch)
 $ErrorActionPreference = "Stop"
 $Atlas = Split-Path -Parent $MyInvocation.MyCommand.Path
 $Dst = Join-Path $Target $File
@@ -35,3 +35,12 @@ if ((Test-Path $Dst) -and (Select-String -Path $Dst -SimpleMatch $Begin -Quiet))
 } else { "adding autoreward block to $Dst" }
 Add-Content -Path $Dst -Value "`n$block" -Encoding utf8
 "done. Your agent now frames validation as A/B/C (C>B>A) and can consult the atlas."
+
+if ($WithAutoresearch) {
+    $arDir = Join-Path (Split-Path $Atlas -Parent) "autoresearch"
+    if (-not (Test-Path $arDir)) {
+        "cloning karpathy/autoresearch -> $arDir"
+        git clone --depth 1 https://github.com/karpathy/autoresearch $arDir
+    } else { "autoresearch already present at $arDir" }
+    "connect the reward: see $Atlas\CONNECT.md + $Atlas\integrations\autoresearch_bridge.py"
+}

@@ -88,6 +88,20 @@ Then `python scripts/build.py` regenerates `INDEX.md` + `models/index.json`. See
 model's **weak** domains and justify its **ranking_score** — that's what stops
 people trusting a proxy where it lies.
 
+## Maintenance & integration
+
+- **Catalog stays current automatically.** CI (`.github/workflows/ci.yml`)
+  rebuilds and fails any push/PR where `INDEX.md` / `models/index.json` are stale,
+  and smoke-tests the demo. Install `hooks/pre-commit` to auto-rebuild locally
+  (`cp hooks/pre-commit .git/hooks/`).
+- **Grow the model index with an agent.** `DISCOVERY.md` is a prompt that scouts
+  new human-response models, *validates* them (calibration evidence, honest weak
+  domains, ranking), and emits entries — so curation isn't all manual.
+- **Connect an autonomous loop.** `bash install.sh <proj> --with-autoresearch`
+  clones karpathy/autoresearch and points you at `CONNECT.md` +
+  `integrations/autoresearch_bridge.py`, which expose any gauge as the scalar
+  reward that loop maximizes (run the bridge for a working example).
+
 ## Repo layout
 
 ```

@@ -1,0 +1,26 @@
+name: build-and-validate
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+jobs:
+  catalog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Rebuild catalogs from entries
+        run: python scripts/build.py
+      - name: Fail if INDEX.md / models/index.json are stale
+        run: |
+          if ! git diff --quiet -- INDEX.md models/index.json; then
+            echo "::error::Catalog is stale. Run 'python scripts/build.py' and commit INDEX.md + models/index.json."
+            git --no-pager diff -- INDEX.md models/index.json
+            exit 1
+          fi
+          echo "Catalog up to date."
+      - name: Smoke-test the value-proof demo
+        run: python demos/naive_metric_fooled.py
