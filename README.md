@@ -56,6 +56,10 @@ B or C (the ratchet).
 metric (PSNR) and eyeballing both pick the wrong candidate; the right tier-C gauge
 picks the faithful one. That gap is the whole point.
 
+**See real worked examples:** [`use-cases.md`](use-cases.md) — abstracted cases of
+deriving the correct gauge (the averaged metric that hid a defect, the "maximize"
+that rewarded cropping, the proxy fooled by a blank input, and more).
+
 **Run it as an RLAIF loop:** define your reward with a gauge here, then let an
 autoresearch-style loop maximize it — see [`CONNECT.md`](CONNECT.md) and
 `integrations/autoresearch_bridge.py` (run it for a working example). Spot-check by
@@ -118,6 +122,7 @@ people trusting a proxy where it lies.
 
 ```
 README.md            the method + onboarding
+use-cases.md         worked examples of deriving the right gauge
 AGENT_POLICY.md      the injectable CLAUDE.md block
 SCHEMA.md            gauge + model entry schemas
 CONTRIBUTING.md      how to add an entry by PR
