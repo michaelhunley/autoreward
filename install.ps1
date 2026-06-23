@@ -17,7 +17,7 @@ $policy
 
 autoreward reference (read when building a gauge):
 - $Atlas\gauges\by-goal.md   - worked examples by workflow goal, copy & adapt
-- $Atlas\models\index.json   - B-proxy models by domain + reliability ranking
+- $Atlas\models\index.json   - predicted-proxy models by domain + reliability ranking
 - $Atlas\README.md           - the full method
 $End
 "@
@@ -34,7 +34,7 @@ if ((Test-Path $Dst) -and (Select-String -Path $Dst -SimpleMatch $Begin -Quiet))
     "updated existing autoreward block in $Dst"
 } else { "adding autoreward block to $Dst" }
 Add-Content -Path $Dst -Value "`n$block" -Encoding utf8
-"done. Your agent now frames validation as A/B/C (C>B>A) and can consult the atlas."
+"done. Your agent now frames validation as Measured > Predicted > Reviewed and can consult the atlas."
 
 if ($WithAutoresearch) {
     $arDir = Join-Path (Split-Path $Atlas -Parent) "autoresearch"

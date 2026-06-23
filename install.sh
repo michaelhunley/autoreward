@@ -21,7 +21,7 @@ $POLICY
 
 autoreward reference (read when building a gauge):
 - $ATLAS/gauges/by-goal.md   - worked examples by workflow goal, copy & adapt
-- $ATLAS/models/index.json   - B-proxy models by domain + reliability ranking
+- $ATLAS/models/index.json   - predicted-proxy models by domain + reliability ranking
 - $ATLAS/README.md           - the full method
 $END"
 
@@ -33,7 +33,7 @@ else
   echo "adding autoreward block to $DST"
 fi
 printf '\n%s\n' "$BLOCK" >> "$DST"
-echo "done. Your agent now frames validation as A/B/C (C>B>A) and can consult the atlas."
+echo "done. Your agent now frames validation as Measured > Predicted > Reviewed and can consult the atlas."
 
 if [ "$WITH_AR" = 1 ]; then
   AR_DIR="$(dirname "$ATLAS")/autoresearch"

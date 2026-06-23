@@ -4,24 +4,24 @@
 
 | id | domain | tier | metric |
 |---|---|---|---|
-| `3d-torso-surface` | 3d-reconstruction | C | torso cross-section interior-fraction: take torso primitives (by bone) |
-| `identity-match` | 3d-reconstruction | image-gen | C | perceptual-feature cosine between the candidate render and the GT rend |
-| `match-target-image-perceptual` | image-gen | reconstruction | C | human-aligned perceptual distance to the target (LPIPS primary; DreamS |
-| `shot-match-to-target` | rendering | image-gen | C | a weighted vector of orthogonal distances: identity (embedding cosine) |
+| `3d-torso-surface` | 3d-reconstruction | measured | torso cross-section interior-fraction: take torso primitives (by bone) |
+| `identity-match` | 3d-reconstruction | image-gen | measured | perceptual-feature cosine between the candidate render and the GT rend |
+| `match-target-image-perceptual` | image-gen | reconstruction | measured | human-aligned perceptual distance to the target (LPIPS primary; DreamS |
+| `shot-match-to-target` | rendering | image-gen | measured | a weighted vector of orthogonal distances: identity (embedding cosine) |
 
-## B-proxy models by modality + ranking
+## Predicted-tier (human-response) models by modality + ranking
 
 | id | modality | rank | strong in | use as |
 |---|---|---|---|---|
-| `arcface` | image | 5 | face identity match | C-metric (face identity cosine |
-| `lpips` | image | 5 | perceptual image fidelity vs a target | C-metric (perceptual distance  |
-| `dreamsim` | image | 4 | human-aligned 'are these the same thing | C-metric (human-aligned image  |
-| `laion-aesthetic` | image | 3 | aesthetic ranking | B-proxy (aesthetic quality) |
-| `clip` | image-text | 4 | semantic similarity, does-this-look-like-X, text-image match | C-metric (image/text feature c |
-| `hpsv2` | image-text | 4 | T2I preference ranking | B-proxy |
-| `imagereward` | image-text | 4 | T2I reward signal | B-proxy (reward for RLAIF on T |
-| `pickscore` | image-text | 4 | ranking T2I outputs for a prompt | B-proxy (which generation a ge |
-| `bertscore` | text | 4 | summary/translation vs reference | C-metric (semantic distance to |
-| `rlhf-reward-model` | text | 4 | response preference ranking, RLHF/RLAIF reward | B-proxy (text quality/helpfuln |
-| `llm-as-judge` | text | 3 | open-ended quality with a rubric, pairwise preference | B-proxy (flexible expert-ish j |
-| `vmaf` | video | 5 | video quality vs a reference | C-metric (perceptual video qua |
+| `arcface` | image | 5 | face identity match | measured-metric (face identity |
+| `lpips` | image | 5 | perceptual image fidelity vs a target | measured-metric (perceptual di |
+| `dreamsim` | image | 4 | human-aligned 'are these the same thing | measured-metric (human-aligned |
+| `laion-aesthetic` | image | 3 | aesthetic ranking | predicted-proxy (aesthetic qua |
+| `clip` | image-text | 4 | semantic similarity, does-this-look-like-X, text-image match | measured-metric (image/text fe |
+| `hpsv2` | image-text | 4 | T2I preference ranking | predicted-proxy |
+| `imagereward` | image-text | 4 | T2I reward signal | predicted-proxy (reward for RL |
+| `pickscore` | image-text | 4 | ranking T2I outputs for a prompt | predicted-proxy (which generat |
+| `bertscore` | text | 4 | summary/translation vs reference | measured-metric (semantic dist |
+| `rlhf-reward-model` | text | 4 | response preference ranking, RLHF/RLAIF reward | predicted-proxy (text quality/ |
+| `llm-as-judge` | text | 3 | open-ended quality with a rubric, pairwise preference | predicted-proxy (flexible expe |
+| `vmaf` | video | 5 | video quality vs a reference | measured-metric (perceptual vi |

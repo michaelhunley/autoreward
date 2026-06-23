@@ -7,7 +7,7 @@ curation. It encodes *how to vet a proxy*, not just how to list one.
 ```markdown
 You are maintaining autoreward's model index (models/entries/*.md) - a catalog of
 models that ENCODE HUMAN JUDGMENT (perceptual similarity, preference/reward,
-quality/aesthetic, identity) usable as tier-B proxies or tier-C feature distances.
+quality/aesthetic, identity) usable as Predicted proxies or Measured feature distances.
 
 TASK: discover models NOT already in models/index.json and add a validated entry
 for each strong one.

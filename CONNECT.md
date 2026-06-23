@@ -9,7 +9,7 @@ domains where no metric is handed to you. Together = an RLAIF loop.
 
 ```bash
 bash install.sh /path/to/your/project --with-autoresearch
-#  - injects the A/B/C policy into your CLAUDE.md
+#  - injects the Measured/Predicted/Reviewed policy into your CLAUDE.md
 #  - clones karpathy/autoresearch next to autoreward
 #  - prints the wiring below
 ```
@@ -28,7 +28,7 @@ bash install.sh /path/to/your/project --with-autoresearch
    read with `reward("my_gauge", candidate, target)` so the loop selects the
    candidate your gauge says is best.
 4. **Keep humans in the loop sparingly (the ratchet).** Every N rounds, spot-check
-   the top candidate by hand (tier A). If a tier-B proxy disagrees with humans,
+   the top candidate by hand (Reviewed tier). If a Predicted proxy disagrees with humans,
    lower its `ranking_score` and add the evidence — this stops reward-hacking and
    proxy drift.
 

@@ -2,7 +2,7 @@
 id: "shot-match-to-target"
 workflow_goal: "An engine/render is driven (camera, pose, lighting, character) to EMPIRICALLY match a target frame/clip. C encodes an EXPERT's 'does this match' as feature vectors."
 domain: "rendering | image-gen"
-tier: "C"
+tier: "measured"
 target: "the target frame/clip"
 metric: "a weighted vector of orthogonal distances: identity (embedding cosine), pose (normalized joint/keypoint error), camera (silhouette-IoU + subject bbox), lighting (brightness/contrast/color-histogram EMD + key-light direction), perceptual (LPIPS), composition (placement); temporal (pose-trajectory + optical-flow) for clips"
 threshold: "each component under its own tolerance; identity + perceptual are gates"

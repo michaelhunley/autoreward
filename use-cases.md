@@ -17,7 +17,7 @@ recurring shapes of "the naive metric lied, here is the one that didn't."
 - **Deriving the gauge:** find the DIMENSION the defect actually changes. The wash
   lowered color saturation and local contrast, so the gauge became "saturation +
   contrast vs the reference," not mean error.
-- **Tier:** C (computable distance to a reference).
+- **Tier:** Measured (computable distance to a reference).
 - **Takeaway:** pick the metric that lives in the same dimension as your failure
   mode. A global average hides systematic shifts, and an output a human would
   reject must move your number.
@@ -31,19 +31,19 @@ recurring shapes of "the naive metric lied, here is the one that didn't."
 - **Deriving the gauge:** express it as a CONSTRAINED objective - reward = fill
   fraction, but only if the subject touches no frame edge; otherwise heavily
   penalized.
-- **Tier:** C.
+- **Tier:** Measured.
 - **Takeaway:** when "more is better" can destroy the objective, encode the
   constraint INTO the gauge instead of trusting the bare maximize.
 
 ## 3. The learned proxy fooled by a trivial input
-- **Problem:** a learned similarity/identity model (a tier-B proxy) gave near-perfect
+- **Problem:** a learned similarity/identity model (a Predicted proxy) gave near-perfect
   scores to blank/empty outputs.
 - **Objective:** judge whether an output matches a target using a human-judgment proxy.
 - **Why it failed:** the proxy was never meant for degenerate inputs - empty-vs-empty
   reads as "identical."
 - **Deriving the gauge:** pair the proxy with an orthogonal VALIDITY check (does the
   output actually contain content?) and only score valid outputs.
-- **Tier:** B, with a C-style cross-check.
+- **Tier:** Predicted, with a Measured-style cross-check.
 - **Takeaway:** no gauge alone. Pair every proxy with an orthogonal check aimed at
   its specific blind spot.
 
@@ -53,7 +53,7 @@ recurring shapes of "the naive metric lied, here is the one that didn't."
 - **Objective:** judge a result that must be BOTH complete and correctly shaped.
 - **Deriving the gauge:** combine orthogonal terms (coverage AND shape/structure),
   because optimizing either alone has a cheap degenerate winner.
-- **Tier:** C.
+- **Tier:** Measured.
 - **Takeaway:** if a single gauge has an easy way to win that isn't the goal, it
   needs a second, orthogonal term.
 
@@ -65,7 +65,7 @@ recurring shapes of "the naive metric lied, here is the one that didn't."
   step was then testing whether FIXING the flagged elements moved the global quality
   number - it did not, which proved the defect was downstream (in how elements were
   combined), not in the elements themselves.
-- **Tier:** C.
+- **Tier:** Measured.
 - **Takeaway:** a per-element gauge does double duty - it finds candidates, and by
   checking whether fixing them moves the global metric, it tells you whether you are
   even looking in the right place.
@@ -77,7 +77,7 @@ recurring shapes of "the naive metric lied, here is the one that didn't."
 - **Deriving the gauge:** measure the SAME target property at each stage boundary -
   e.g., the value stored after stage N vs the value produced by stage N+1. The stage
   where the number drops is the culprit.
-- **Tier:** C.
+- **Tier:** Measured.
 - **Takeaway:** instrument stage boundaries with one consistent gauge to localize,
   instead of guessing which stage is at fault.
 
@@ -89,7 +89,7 @@ recurring shapes of "the naive metric lied, here is the one that didn't."
   behavior against the EXPECTED pattern (which components should change a lot vs stay
   stable). The measurement contradicted the visual assumption and redirected the
   whole investigation.
-- **Tier:** C.
+- **Tier:** Measured.
 - **Takeaway:** turn "it looks like X is broken" into a per-component measurement
   against an expected profile. The eye misattributes causes.
 
@@ -99,8 +99,9 @@ recurring shapes of "the naive metric lied, here is the one that didn't."
 In every case the naive metric either hid the defect, rewarded a degenerate winner,
 or got fooled. The fix was always the same three moves:
 1. Measure the dimension the failure actually lives in.
-2. Anchor to a reference or an expected pattern where possible (tier C).
+2. Anchor to a reference or an expected pattern where possible (Measured tier).
 3. Pair the gauge with an orthogonal cross-check.
 
-When you cannot yet do C, a learned proxy (B) plus a validity cross-check beats
-eyeballing (A) - and every A you do becomes the labeled data that builds B and C.
+When you cannot yet do Measured, a Predicted proxy plus a validity cross-check beats
+eyeballing (Reviewed) - and every Reviewed pass becomes the labeled data that builds
+Predicted and Measured.

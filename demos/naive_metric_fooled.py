@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # (autoreward) RUNNABLE PROOF of value - no IP, numpy only.
 #
-# The core claim: validating quality by eyeballing (tier A) or by a naive metric
-# is unreliable; the RIGHT tier-C gauge (target-anchored, structure/perception
+# The core claim: validating quality by eyeballing (Reviewed tier) or by a naive metric
+# is unreliable; the RIGHT Measured gauge (target-anchored, structure/perception
 # aware) makes the correct call. Here a trivial 2-pixel shift tanks PSNR while a
 # detail-destroying blur scores BETTER on PSNR - so PSNR (and "looks sharp")
 # pick the wrong candidate. A structure-aware gauge picks the faithful one.
@@ -46,7 +46,7 @@ sa, sb = structure_score(A_blur), structure_score(B_shift)
 print("Candidate A = heavy blur (detail destroyed)   |  Candidate B = sharp, shifted 2px")
 print(f"  PSNR (naive C / proxy for 'looks clean'):  A={pa:5.1f} dB   B={pb:5.1f} dB"
       f"   -> picks {'A (blur) - WRONG' if pa > pb else 'B'}")
-print(f"  structure gauge (right tier-C):            A={sa:6.3f}     B={sb:6.3f}"
+print(f"  structure gauge (right Measured):            A={sa:6.3f}     B={sb:6.3f}"
       f"   -> picks {'B (sharp) - RIGHT' if sb > sa else 'A'}")
 print()
 print("Lesson: a naive metric mis-ranks (a 2px shift wrecks PSNR; blur 'wins' by")

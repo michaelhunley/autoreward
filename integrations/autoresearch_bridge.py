@@ -3,7 +3,7 @@
 #
 # An autonomous loop (karpathy/autoresearch and the like) MAXIMIZES a scalar
 # metric. In objective domains that's given (val_bpb). autoreward lets you make
-# that scalar a GAUGE - a tier-C distance to a target, or a tier-B proxy - so the
+# that scalar a GAUGE - a Measured distance to a target, or a Predicted proxy - so the
 # loop can run in subjective domains. This is the thin adapter: register a gauge,
 # get back a reward the loop maximizes.
 #
@@ -31,11 +31,11 @@ def best_of(name, candidates, target=None):
     return max(candidates, key=lambda c: reward(name, c, target))
 
 
-# --- example: wire a tier-C structure gauge as a reward (numpy only) ----------
+# --- example: wire a Measured structure gauge as a reward (numpy only) ----------
 if __name__ == "__main__":
     import numpy as np
 
-    def structure_distance(cand, tgt):           # tier-C: distance to target, lower=better
+    def structure_distance(cand, tgt):           # Measured: distance to target, lower=better
         et = np.mean(np.hypot(*np.gradient(tgt)))
         return abs(np.mean(np.hypot(*np.gradient(cand))) - et)
 
@@ -51,4 +51,4 @@ if __name__ == "__main__":
     print("In a real loop: each round your generator proposes candidates; score them")
     print("with reward(<gauge>, cand, target); keep the max; iterate. Swap 'structure'")
     print("for an LPIPS/identity/reward-model gauge from models/index.json. Spot-check")
-    print("with humans (tier A) periodically to recalibrate a tier-B proxy.")
+    print("with humans (Reviewed tier) periodically to recalibrate a Predicted proxy.")

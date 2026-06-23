@@ -5,7 +5,7 @@
       "id": "arcface",
       "modality": "image",
       "encodes": "face-identity discrimination (margin loss on identity labels)",
-      "use_as": "C-metric (face identity cosine vs a reference face)",
+      "use_as": "measured-metric (face identity cosine vs a reference face)",
       "domains_strong": [
         "face identity match"
       ],
@@ -21,7 +21,7 @@
       "id": "bertscore",
       "modality": "text",
       "encodes": "semantic token alignment ~ human similarity to a reference text",
-      "use_as": "C-metric (semantic distance to a reference)",
+      "use_as": "measured-metric (semantic distance to a reference)",
       "domains_strong": [
         "summary/translation vs reference"
       ],
@@ -37,7 +37,7 @@
       "id": "clip",
       "modality": "image-text",
       "encodes": "web-scale image-caption association ~ human semantic 'what is this / does it match this description",
-      "use_as": "C-metric (image/text feature cosine to a target) and weak B-proxy",
+      "use_as": "measured-metric (image/text feature cosine to a target) and weak predicted-proxy",
       "domains_strong": [
         "semantic similarity",
         "does-this-look-like-X",
@@ -56,7 +56,7 @@
       "id": "dreamsim",
       "modality": "image",
       "encodes": "human similarity judgments at the mid-level (layout/pose/identity-ish)",
-      "use_as": "C-metric (human-aligned image distance)",
+      "use_as": "measured-metric (human-aligned image distance)",
       "domains_strong": [
         "human-aligned 'are these the same thing"
       ],
@@ -71,7 +71,7 @@
       "id": "hpsv2",
       "modality": "image-text",
       "encodes": "human preference for generated images",
-      "use_as": "B-proxy",
+      "use_as": "predicted-proxy",
       "domains_strong": [
         "T2I preference ranking"
       ],
@@ -86,7 +86,7 @@
       "id": "imagereward",
       "modality": "image-text",
       "encodes": "human ratings of T2I (alignment + fidelity + aesthetics)",
-      "use_as": "B-proxy (reward for RLAIF on T2I)",
+      "use_as": "predicted-proxy (reward for RLAIF on T2I)",
       "domains_strong": [
         "T2I reward signal"
       ],
@@ -101,7 +101,7 @@
       "id": "laion-aesthetic",
       "modality": "image",
       "encodes": "human aesthetic ratings",
-      "use_as": "B-proxy (aesthetic quality)",
+      "use_as": "predicted-proxy (aesthetic quality)",
       "domains_strong": [
         "aesthetic ranking"
       ],
@@ -118,7 +118,7 @@
       "id": "llm-as-judge",
       "modality": "text",
       "encodes": "approximates an expert rater via instructions + few-shot",
-      "use_as": "B-proxy (flexible expert-ish judgment)",
+      "use_as": "predicted-proxy (flexible expert-ish judgment)",
       "domains_strong": [
         "open-ended quality with a rubric",
         "pairwise preference"
@@ -136,7 +136,7 @@
       "id": "lpips",
       "modality": "image",
       "encodes": "human 2AFC perceptual-similarity judgments",
-      "use_as": "C-metric (perceptual distance to a target image)",
+      "use_as": "measured-metric (perceptual distance to a target image)",
       "domains_strong": [
         "perceptual image fidelity vs a target"
       ],
@@ -152,7 +152,7 @@
       "id": "pickscore",
       "modality": "image-text",
       "encodes": "human preference between text-to-image generations",
-      "use_as": "B-proxy (which generation a general human prefers)",
+      "use_as": "predicted-proxy (which generation a general human prefers)",
       "domains_strong": [
         "ranking T2I outputs for a prompt"
       ],
@@ -168,7 +168,7 @@
       "id": "rlhf-reward-model",
       "modality": "text",
       "encodes": "human preference between responses",
-      "use_as": "B-proxy (text quality/helpfulness reward)",
+      "use_as": "predicted-proxy (text quality/helpfulness reward)",
       "domains_strong": [
         "response preference ranking",
         "RLHF/RLAIF reward"
@@ -185,7 +185,7 @@
       "id": "vmaf",
       "modality": "video",
       "encodes": "human video-quality (MOS) judgments",
-      "use_as": "C-metric (perceptual video quality vs a reference)",
+      "use_as": "measured-metric (perceptual video quality vs a reference)",
       "domains_strong": [
         "video quality vs a reference"
       ],

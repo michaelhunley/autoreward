@@ -87,7 +87,7 @@ def main():
              "## Gauges by domain\n", "| id | domain | tier | metric |", "|---|---|---|---|"]
     for g in sorted(gauges, key=lambda x: (x.get("domain", ""), x.get("id", ""))):
         lines.append(f"| `{g.get('id')}` | {g.get('domain')} | {g.get('tier')} | {str(g.get('metric',''))[:70]} |")
-    lines += ["\n## B-proxy models by modality + ranking\n",
+    lines += ["\n## Predicted-tier (human-response) models by modality + ranking\n",
               "| id | modality | rank | strong in | use as |", "|---|---|---|---|---|"]
     for m in sorted(models, key=lambda x: (x.get("modality", ""), -int(x.get("ranking_score", 0)))):
         lines.append(f"| `{m.get('id')}` | {m.get('modality')} | {m.get('ranking_score')} | "

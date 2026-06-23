@@ -1,14 +1,14 @@
 # Contributing to autoreward
 
 The library grows by pull request. Two kinds of contributions: **gauges** (ways to
-score a goal) and **B-proxy models** (models that encode human judgment). Each is a
+score a goal) and **predicted-proxy models** (models that encode human judgment). Each is a
 single markdown file with frontmatter, so PRs never collide on one big file.
 
 ## Add a gauge
 
 1. Create `gauges/entries/<your-id>.md` following the gauge schema in
    [`SCHEMA.md`](SCHEMA.md). Frontmatter holds the fields; the body is a short
-   how-to. Pick the **highest tier you can build** (C > B > A).
+   how-to. Pick the **highest tier you can build** (Measured > Predicted > Reviewed).
 2. State the **target** and **metric** precisely, a **threshold**, and — required —
    a **cross_check** and the known **fooled_by** failure mode. A gauge with no
    cross-check is not accepted; everything is foolable.
@@ -16,7 +16,7 @@ single markdown file with frontmatter, so PRs never collide on one big file.
 4. Run `python scripts/build.py` (stdlib only) and commit the regenerated
    `INDEX.md` + `models/index.json`.
 
-## Add a B-proxy model
+## Add a predicted-proxy model
 
 1. Create `models/entries/<your-id>.md` per the model-index schema.
 2. Be honest about `domains_weak` and justify `ranking_score` with **calibration
