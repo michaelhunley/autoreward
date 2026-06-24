@@ -26,6 +26,13 @@ def reward(name, candidate, target=None):
     return v if hib else -v
 
 
+def loss(name, candidate, target=None):
+    """Scalar a MINIMIZING loop (e.g. autoresearch, whose val_bpb is lower=better)
+    reads. This is just -reward; REPORT THIS as your run's headline metric so the
+    loop's 'lower is better' convention optimizes your gauge the right direction."""
+    return -reward(name, candidate, target)
+
+
 def best_of(name, candidates, target=None):
     """Pick the candidate with the highest reward (the loop's select step)."""
     return max(candidates, key=lambda c: reward(name, c, target))
