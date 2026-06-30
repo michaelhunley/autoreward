@@ -15,6 +15,12 @@
 # ORDERING / direction is guaranteed - and that is all a keep-the-best loop (and
 # autoresearch) needs. Do NOT assume reward is in 0..1. If your use case is
 # gradient-RL that needs a bounded [0,1] reward, wrap it with normalize().
+#
+# MULTI-OBJECTIVE SUPPORT
+# When you run the multi-objective optimizer (optimizer.run()) you get a Pareto front
+# of Nodes, each holding a RewardVector. Collapse to a scalar for autoresearch with
+# vector_loss() / vector_reward(). The "min" method (maximin) is recommended: it
+# optimizes the worst characteristic, which is what a well-balanced result needs.
 
 GAUGES = {}  # name -> (fn, higher_is_better)
 
@@ -52,6 +58,44 @@ def normalize(name, candidate, lo, hi, target=None):
 def best_of(name, candidates, target=None):
     """Pick the candidate with the highest reward (the loop's select step)."""
     return max(candidates, key=lambda c: reward(name, c, target))
+
+
+# ── Multi-objective bridge ────────────────────────────────────────────────────
+# These connect optimizer.run() (which returns a Pareto front of Nodes) to the
+# scalar convention that autoresearch expects.
+
+def vector_reward(rv, method="min"):
+    """
+    Collapse a RewardVector to a scalar the loop MAXIMIZES.
+
+    method:
+      "min"      maximin — optimize the worst characteristic (recommended)
+      "mean"     mean of all characteristic scores
+      "soft_min" smooth approximation of min (k=5)
+
+    Typical usage (autoresearch reads loss, not reward):
+        from optimizer import best_by_maximin
+        best = best_by_maximin(front)
+        print(f"val_metric: {vector_loss(best.rv):.6f}")
+    """
+    return rv.scalar(method)
+
+
+def vector_loss(rv, method="min"):
+    """
+    Collapse a RewardVector to a scalar a MINIMIZING loop (autoresearch) reads.
+    Lower = better match, consistent with val_bpb convention.
+    Report this as your run's headline metric.
+    """
+    return -vector_reward(rv, method)
+
+
+def best_node_of(front, method="min"):
+    """
+    Pick the best Node from a Pareto front by scalar collapse.
+    Convenience wrapper so callers do not need to import optimizer.
+    """
+    return max(front, key=lambda n: vector_reward(n.rv, method))
 
 
 # --- example: wire a Measured structure gauge as a reward (numpy only) ----------
