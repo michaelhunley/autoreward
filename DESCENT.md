@@ -40,6 +40,8 @@ is the speed/detail dial: small = fast (highest-value params only), large = thor
 
 ## The Jacobian is the whole game — learn it, don't guess it
 
+> New to Jacobians? Read the plain-language [JACOBIAN-EXPLAINED.md](JACOBIAN-EXPLAINED.md) first.
+
 A driver is only as good as its Jacobian. Two ways to get it:
 
 - **Numerical** (default): perturb each active knob, measure the feature deltas. Works with zero
