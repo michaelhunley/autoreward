@@ -271,6 +271,25 @@ This runs a toy three-characteristic lighting problem — brightness, warmth,
 contrast — from a bad starting point to near-perfect in 30 evals and shows the
 Pareto front.
 
+### A second driver: `descent` (bisection + Gauss-Newton) — see [DESCENT.md](DESCENT.md)
+
+`optimizer.run` is the general driver (opaque candidates, discrete-friendly). When your candidate is
+a vector of **continuous knobs** and features are locally **monotone** in them, `descent` is far more
+sample-efficient: it **bisects** each feature's controlling knob to target (~log2 evals) and resolves
+the coupled residual with a joint **Gauss-Newton** solve (numerical or a **learned** Jacobian). Same
+value layer (`RewardVector`); you pick the driver.
+
+```python
+from autoreward.descent import Knob, descent
+best, feats, evals, trace = descent(candidate, knobs, measure, target, weights=w, jacobian=learned)
+```
+
+Key lesson (why ground truth is *training*, not a crutch): a driver is only as good as its Jacobian.
+On the toy coupled target, numerical bisect+GN solves in ~53 evals; a **learned** Jacobian (fitted
+from logged knob→feature samples) solves in **~11 evals and more accurately** — so use ground-truth
+data to *learn the sensitivity table*, then the fast driver works on a real engine. Full write-up in
+[DESCENT.md](DESCENT.md).
+
 ---
 
 ## Two rules that make it an automatable reward

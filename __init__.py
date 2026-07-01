@@ -8,6 +8,12 @@ from autoreward.optimizer import (
     best_by_mean,
     pareto_front,
 )
+from autoreward.descent import (
+    Knob,
+    descent,
+    bisect_search,
+    gauss_newton,
+)
 
 __all__ = [
     "RewardVector",
@@ -17,4 +23,9 @@ __all__ = [
     "best_by_maximin",
     "best_by_mean",
     "pareto_front",
+    # descent driver (bisection + joint Gauss-Newton) -- see DESCENT.md
+    "Knob",
+    "descent",
+    "bisect_search",
+    "gauss_newton",
 ]
