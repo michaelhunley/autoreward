@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autoreward"
+version = "0.1.0"
+description = "Generic reward-vector search: bisection + Gauss-Newton descent, Pareto optimizer, reward vectors. Domain-agnostic source of truth for CinePipe autoreward search."
+requires-python = ">=3.10"
+dependencies = ["numpy"]
+
+# The package modules (__init__.py, descent.py, optimizer.py, reward_vector.py) live at the repo
+# root, so map the `autoreward` import package to "." (flat layout).
+[tool.setuptools]
+packages = ["autoreward"]
+
+[tool.setuptools.package-dir]
+autoreward = "."
