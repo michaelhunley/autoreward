@@ -295,6 +295,22 @@ def learn_jacobian(candidate, knobs, measure, target, *, eps=0.06):
     return jac, base, used
 
 
+def format_search_note(bisect_status, gn_status, stationarity):
+    """Plain-text summary of search convergence, for a judge/reviewer's context. Empty string if
+    everything converged or was confirmed stationary -- nothing worth flagging."""
+    still = list((stationarity or {}).get("still_improvable", []))
+    not_probed = list((stationarity or {}).get("not_probed", []))
+    if not still and not not_probed:
+        return ""
+    parts = []
+    if still:
+        parts.append("did not fully converge and remain locally improvable: " + ", ".join(sorted(still)))
+    if not_probed:
+        parts.append("not checked (probe budget exhausted): " + ", ".join(sorted(not_probed)))
+    count = len(set(still) | set(not_probed))
+    return f"SEARCH STATUS: {count} feature(s) " + "; ".join(parts) + "."
+
+
 def descent(candidate, knobs, measure, target, *, weights=None, bisect_budget=40, gn_budget=90,
             jacobian_features=6, jacobian=None, record=None, stationarity_mode="trace",
             stationarity_budget=6):

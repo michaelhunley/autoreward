@@ -79,3 +79,10 @@ if __name__ == "__main__":
             except Exception:
                 print(f"  FAIL {name}"); traceback.print_exc()
     print(f"{passed} passed")
+
+
+def test_format_search_note():
+    from autoreward.descent import format_search_note
+    assert format_search_note({}, {}, {"still_improvable": [], "not_probed": []}) == ""
+    note = format_search_note({}, {}, {"still_improvable": ["a"], "not_probed": ["b"]})
+    assert "SEARCH STATUS: 2 feature" in note and "improvable: a" in note and "exhausted): b" in note
