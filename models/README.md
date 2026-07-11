@@ -24,6 +24,29 @@ deploy one, hold out human judgments and track the agreement; if it drops, the
 score here is too high for your distribution — lower it locally and note why. The
 ranking here is a prior, not a guarantee.
 
+## Multimodal VLM judges (planned category)
+
+A distinct family of predicted-proxy: a **multimodal VLM asked to judge "is this on-model?"**
+against a reference set — the human-proxy for structural/identity checks (used by
+`cinepipe-warden` Warden2D's Predicted tier; see that repo's `docs/warden-diffusion-plan.md`
+18.7.2). These need extra selection metadata beyond `ranking_score` so a caller can pick the
+best AVAILABLE option per environment, and run FREE/local when no paid key is present:
+
+- `access`: `api` vs `local`
+- `license`: e.g. proprietary (Claude) vs Apache-2.0 (most OSS VLMs)
+- `vram_gb`: local footprint (0 for API)
+- `cost`: approx per-call (0 for local)
+- `availability_probe`: how to detect it's usable (env key present / weights on disk)
+
+Known-good options to catalog (fill entries in `index.json` when this ships):
+- **Claude multimodal (API)** — highest-quality proxy; needs `ANTHROPIC_API_KEY`.
+- **Open-source / free (local, no key, the default fallback)** — Qwen2.5-VL, InternVL,
+  MiniCPM-V, LLaVA-OneVision.
+
+A selector reads this catalog + a config (key present? VRAM budget? cost/quality preference?)
+and picks the best available — Claude if a key exists, else the best local VLM that fits VRAM.
+This is autoreward's role as the source of truth for "which judges are known-good."
+
 ## Contributing
 
 Add a model: fill the schema, justify `ranking_score` with calibration evidence or
